@@ -24,6 +24,9 @@ jobs:
           pip install -r requirements.txt
       - name: Run analysis
         shell: bash
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          HONEYCOMB_API_KEY: ${{ secrets.HONEYCOMB_API_KEY }}
         run: |
           python -m main.py open-telemetry ${{ matrix.repositories }}
 
