@@ -98,7 +98,7 @@ def main():
     filtered_issues = [issue for issue in issues if "renovate-bot" not in issue.user.login and "forking-renovate[bot]" not in issue.user.login]
     issues_json = [issue.as_json() for issue in filtered_issues]
     responses = run_issue_process(issues_json)
-    if (os.env.get('DRY_RUN')):
+    if (os.getenv('DRY_RUN')):
         dry_run(responses)
     else:
         send_to_honeycomb(responses)
