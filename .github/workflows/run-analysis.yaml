@@ -1,0 +1,29 @@
+name: Run Analysis Script
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  run-analysis:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repositories: ['opentelemetry-go', 'opentelemetry-go-contrib', 'opentelemetry-collector', 'opentelemetry-collector-contrib', 'opentelemetry-java', 'opentelemetry-java-instrumentation', 'opentelemetry-js', 'opentelemetry-js-contrib', 'opentelemetry-python', 'opentelemetry-python-contrib']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run analysis
+        shell: bash
+        run: |
+          python -m main.py open-telemetry ${{ matrix.repositories }}
+
