@@ -28,6 +28,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           HONEYCOMB_API_KEY: ${{ secrets.HONEYCOMB_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: true
         run: |
           python -m main open-telemetry ${{ matrix.repositories }}
 

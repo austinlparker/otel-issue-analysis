@@ -29,15 +29,16 @@ class Issue(BaseModel):
     source_repo: str = Field(..., description="The name of the repository where the issue was opened.")
     labels: List[str] = Field(..., description="A list of labels on the issue.")
 
-def send_to_honeycomb(response):
+def send_to_honeycomb(responses):
     evt = libhoney.Event()
-    for field, value in response.dict().items():
-        if isinstance(value, list):
-            for item in value:
-                evt.add_field(field, item)
-        else:
-            evt.add_field(field, value)
-    evt.send()
+    for response in responses:
+        for field, value in response.dict().items():
+            if isinstance(value, list):
+                for item in value:
+                    evt.add_field(field, item)
+            else:
+                evt.add_field(field, value)
+        evt.send()
 
 def process_issue(issue):
     resp = client.chat.completions.create(
