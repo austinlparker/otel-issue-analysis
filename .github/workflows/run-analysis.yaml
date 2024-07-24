@@ -28,5 +28,5 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           HONEYCOMB_API_KEY: ${{ secrets.HONEYCOMB_API_KEY }}
         run: |
-          python -m main.py open-telemetry ${{ matrix.repositories }}
+          python -m main open-telemetry ${{ matrix.repositories }}
 
