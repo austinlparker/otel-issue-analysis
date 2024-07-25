@@ -10,7 +10,7 @@ from tqdm import tqdm
 import sys
 
 github = github3.login(token=os.getenv('GITHUB_TOKEN'))
-libhoney.init(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues')
+libhoney.init(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'))
 client = instructor.from_openai(OpenAI())
 
 class Issue(BaseModel):
