@@ -10,7 +10,7 @@ from tqdm import tqdm
 import sys
 
 github = github3.login(token=os.getenv('GITHUB_TOKEN'))
-libhoney.init(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'))
+libhoney.init(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'), block_on_send=True)
 client = instructor.from_openai(OpenAI())
 
 class Issue(BaseModel):
@@ -29,15 +29,16 @@ class Issue(BaseModel):
     source_repo: str = Field(..., description="The name of the repository where the issue was opened.")
     labels: List[str] = Field(..., description="A list of labels on the issue.")
 
-def send_to_honeycomb(responses):
-    evt = libhoney.Event()
+def send_to_honeycomb(client, responses):
+    builder = client.new_builder()
     for response in responses:
         for field, value in response.dict().items():
             if isinstance(value, list):
                 for item in value:
-                    evt.add_field(field, item)
+                    builder.add_field(field, item)
             else:
-                evt.add_field(field, value)
+                builder.add_field(field, value)
+        evt = builder.new_event()
         evt.send()
 
 def process_issue(issue):
@@ -99,10 +100,12 @@ def main():
     filtered_issues = [issue for issue in issues if "renovate-bot" not in issue.user.login and "forking-renovate[bot]" not in issue.user.login]
     issues_json = [issue.as_json() for issue in filtered_issues]
     responses = run_issue_process(issues_json)
+    hc = libhoney.Client()
     if (os.getenv('DRY_RUN')):
         dry_run(responses)
     else:
-        send_to_honeycomb(responses)
+        send_to_honeycomb(hc, responses)
+    hc.close()
 
 if __name__ == "__main__":
     main()
