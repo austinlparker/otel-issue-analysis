@@ -96,7 +96,7 @@ def dry_run(responses):
 def main():
     username, repository = get_username_and_repository()
     issues = github.issues_on(username, repository, state='open')
-    filtered_issues = [issue for issue in issues if "renovate-bot" not in issue.user.login and "forking-renovate[bot]" not in issue.user.login]
+    filtered_issues = [issue for issue in issues if "renovate-bot" not in issue.user.login and "forking-renovate" not in issue.user.login and "dependabot" not in issue.user.login]
     issues_json = [issue.as_json() for issue in filtered_issues]
     responses = run_issue_process(issues_json)
     hc = libhoney.Client(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'))
