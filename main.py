@@ -10,7 +10,6 @@ from tqdm import tqdm
 import sys
 
 github = github3.login(token=os.getenv('GITHUB_TOKEN'))
-libhoney.init(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'), block_on_send=True)
 client = instructor.from_openai(OpenAI())
 
 class Issue(BaseModel):
@@ -100,7 +99,7 @@ def main():
     filtered_issues = [issue for issue in issues if "renovate-bot" not in issue.user.login and "forking-renovate[bot]" not in issue.user.login]
     issues_json = [issue.as_json() for issue in filtered_issues]
     responses = run_issue_process(issues_json)
-    hc = libhoney.Client()
+    hc = libhoney.Client(writekey=os.getenv('HONEYCOMB_API_KEY'), dataset='otel-github-issues', api_host=os.getenv('HONEYCOMB_ENDPOINT'))
     if (os.getenv('DRY_RUN')):
         dry_run(responses)
     else:
